@@ -108,15 +108,15 @@ export default App;
 
 ```javascript
 <GoogleMapReact
-    bootstrapURLKeys={{ key: Key }}　// API Key
-    defaultCenter={this.props.center} // 預設地圖視角，也就是我一打開會先看到哪個地區
-    defaultZoom={this.props.zoom} //　預設縮放視角
+  bootstrapURLKeys={{ key: Key }}　// API Key
+  defaultCenter={this.props.center} // 預設地圖視角，也就是我一打開會先看到哪個地區
+  defaultZoom={this.props.zoom} //　預設縮放視角
 >
-    <AnyReactComponent
-    lat={59.955413} //　緯度
-    lng={30.337844} // 經度
-    text="My Marker"　// 這個 Marker 的文字
-    />
+  <AnyReactComponent
+  lat={59.955413} //　緯度
+  lng={30.337844} // 經度
+  text="My Marker"　// 這個 Marker 的文字
+  />
 </GoogleMapReact>
 
 ```
@@ -125,11 +125,11 @@ export default App;
 
 ```javascript
 static defaultProps = {
-    center: {
-      lat: 59.95,
-      lng: 30.33
-    },
-    zoom: 11
+  center: {
+    lat: 59.95,
+    lng: 30.33
+  },
+  zoom: 11
 };
 ```
 
@@ -151,11 +151,11 @@ static defaultProps = {
 
 ```javascript
 static defaultProps = {
-    center: {
-      lat: 25.04,
-      lng: 121.50
-    },
-    zoom: 17 // 順便也放大一下縮放視角
+  center: {
+    lat: 25.04,
+    lng: 121.50
+  },
+  zoom: 17 // 順便也放大一下縮放視角
 };
 ```
 
