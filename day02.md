@@ -44,7 +44,7 @@ const SimpleMap = (props) => {
         <AnyReactComponent
           lat={59.955413}
           lng={30.337844}
-          text="My Marker"
+          text="My Position"
         />
       </GoogleMapReact>
     </div>
@@ -161,7 +161,11 @@ const SimpleMap = (props) => {
 }
 ```
 
-看到我們的地圖上有 My Marker 了，因為我設定它的位置 `myPosition` 為 `{ lat: 25.04, lng: 121.50 }`，與地圖一樣，
+讓我們回頭看看地圖:
+
+![m12](./img/m12.jpg)
+
+看到我們的地圖上有 My Position 了，因為我設定它的位置 `myPosition` 為 `{ lat: 25.04, lng: 121.50 }`，與地圖一樣，
 
 接下來寫一個 Function，用來處理移動事件發生時重新更新 `myPosition` 的值，而這個更新值就是我地圖視角正中心點的值，需要從 mapInstance 中去取
 
@@ -195,7 +199,7 @@ const handleCenterChange = () => {
   ....
 ```
 
-如此就可以在移動邊界的時候，觸發 `handleCenterChange`，改變 My Marker 的位置囉 !
+如此就可以在移動邊界的時候，觸發 `handleCenterChange`，改變 My Position 的位置囉 !
 
 ![g02](./img/g02.gif)
 
