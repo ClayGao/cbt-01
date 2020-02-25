@@ -5,6 +5,15 @@ import GoogleMapReact from 'google-map-react';
 
 const MyPositionMarker = ({ text }) => <div>{text}</div>;
 
+// Cafe Marker
+
+const CafeMarker = ({ icon, text }) => (
+  <div>
+    <img style={{ height: '30px', width: '30px' }} src={icon} />
+    <div>{text}</div>
+  </div>
+)
+
 // Map　
 const SimpleMap = (props) => {
 
@@ -17,6 +26,7 @@ const SimpleMap = (props) => {
   const [mapApiLoaded, setMapApiLoaded] = useState(false)
   const [mapInstance, setMapInstance] = useState(null)
   const [mapApi, setMapApi] = useState(null)
+  const [places, setPlaces] = useState([])
 
   // 當地圖載入完成，將地圖實體與地圖 API 傳入 state 供之後使用
   const apiHasLoaded = (map, maps) => {
@@ -33,12 +43,35 @@ const SimpleMap = (props) => {
       })
     }
   } 
-  
+
+  const findCafeLocation = () => {
+    if(mapApiLoaded) {
+      const service = new mapApi.places.PlacesService(mapInstance)
+
+      const request = {
+        location: myPosition,
+        radius: 1000, 
+        type: ['cafe']
+      };
+    
+      service.nearbySearch(request, (results, status) => {
+        if(status === mapApi.places.PlacesServiceStatus.OK) {
+          setPlaces(results)
+        }
+      })
+    }
+  }
+
+  console.log(places)
+
   return (
-    // Important! Always set the container height explicitly
     <div style={{ height: '100vh', width: '100%' }}>
+      <input type="button" value="找咖啡廳" onClick={findCafeLocation} />
       <GoogleMapReact
-        bootstrapURLKeys={{ key: Key }}
+        bootstrapURLKeys={{ 
+          key: Key,
+          libraries:['places'] // 要在這邊放入我們要使用的 API
+        }}
         onBoundsChange={handleCenterChange}
         defaultCenter={props.center}
         defaultZoom={props.zoom}
@@ -50,6 +83,16 @@ const SimpleMap = (props) => {
           lng={myPosition.lng}
           text="My Position"
         />
+        {places.map(item=>(
+          <CafeMarker
+            icon={item.icon}
+            key={item.id}
+            lat={item.geometry.location.lat()}
+            lng={item.geometry.location.lng()}
+            text={item.name} 
+            placeId={item.place_id} 
+          />
+        ))}
       </GoogleMapReact>
     </div>
   );
