@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Key } from './key'
 import './App.css';
 import GoogleMapReact from 'google-map-react';
@@ -14,6 +14,14 @@ const CafeMarker = ({ icon, text }) => (
   </div>
 )
 
+// 搜尋按鈕
+
+const SearchType= ({text, type, handleSearchType}) => {
+  return <input type="button" value={text} name={type} />
+}
+  
+
+
 // Map　
 const SimpleMap = (props) => {
 
@@ -23,6 +31,8 @@ const SimpleMap = (props) => {
     lng: 121.50
   })
 
+  const [searchingType, setSearchType] = useState('cafe')
+  const [mapType, setMapType] = useState('roadmap')
   const [mapApiLoaded, setMapApiLoaded] = useState(false)
   const [mapInstance, setMapInstance] = useState(null)
   const [mapApi, setMapApi] = useState(null)
@@ -35,6 +45,12 @@ const SimpleMap = (props) => {
     setMapApiLoaded(true)
   };
 
+  // 改變地圖樣式
+  const handleMapTypeId = e => {
+    setMapType(e.target.name)
+  }
+
+  // 處理中心點改變
   const handleCenterChange = () => {
     if(mapApiLoaded) {
       setMyPosition({
@@ -44,14 +60,20 @@ const SimpleMap = (props) => {
     }
   } 
 
-  const findCafeLocation = () => {
+  //　改變搜尋類型
+  const handleSearchType = e => {
+    setSearchType(e.target.name)
+  }
+
+  // 搜尋
+  const findLocation = () => {
     if(mapApiLoaded) {
       const service = new mapApi.places.PlacesService(mapInstance)
 
       const request = {
         location: myPosition,
         radius: 1000, 
-        type: ['cafe']
+        type: searchingType
       };
     
       service.nearbySearch(request, (results, status) => {
@@ -61,17 +83,29 @@ const SimpleMap = (props) => {
       })
     }
   }
-
-  console.log(places)
+  
+  useEffect(() => {
+    findLocation()
+    console.log()
+  },[myPosition, searchingType])
+  
 
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      <input type="button" value="找咖啡廳" onClick={findCafeLocation} />
+      <input type="button" value="開始搜尋" onClick={findLocation} />
+      <div onClick={handleSearchType}>
+        <SearchType text="找餐廳"　type="restaurant" />
+        <SearchType text="找牙醫"　type="dentist" />
+        <SearchType text="找健身房"　type="gym" />
+      </div>
+      <input type="button" value="衛星" onClick={handleMapTypeId} name="hybrid" />
+      <input type="button" value="路線" onClick={handleMapTypeId} name="roadmap" />
       <GoogleMapReact
         bootstrapURLKeys={{ 
           key: Key,
           libraries:['places'] // 要在這邊放入我們要使用的 API
         }}
+        options={{ mapTypeId: mapType }}
         onBoundsChange={handleCenterChange}
         defaultCenter={props.center}
         defaultZoom={props.zoom}
