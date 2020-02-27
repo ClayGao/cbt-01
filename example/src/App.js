@@ -67,7 +67,6 @@ const SimpleMap = (props) => {
   const findLocation = () => {
     if(mapApiLoaded) {
       const service = new mapApi.places.PlacesService(mapInstance)
-      console.log('b')
       const request = {
         location: myPosition,
         radius: 1000, 
@@ -82,15 +81,15 @@ const SimpleMap = (props) => {
     }
   }
   
+  
   useEffect(() => {
     findLocation()
-    console.log('a')
   },[mapApiLoaded, myPosition, searchType])
+  
   
 
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      <input type="button" value="開始搜尋" onClick={findLocation} />
       <div onClick={handleSearchType}>
         <SearchType text="找餐廳"　type="restaurant" />
         <SearchType text="找牙醫"　type="dentist" />
@@ -109,7 +108,6 @@ const SimpleMap = (props) => {
         defaultZoom={props.zoom}
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => apiHasLoaded(map, maps)}
-        distanceToMouse={50}
       >
         <MyPositionMarker
           lat={myPosition.lat}

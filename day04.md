@@ -194,8 +194,7 @@ return (
 `input` 這邊應該是要包成 Component 比較美觀，所以我們可以簡單包一下：
 
 ```javascript
-// 搜尋按鈕
-
+// 切換搜尋類型按鈕
 const SearchType = ({ text, type }) => {
   return <input type="button" value={text} name={type} />
 }
