@@ -178,7 +178,7 @@ return (
     <GoogleMapReact
       bootstrapURLKeys={{
         key: Key,
-        libraries:['places'] // 要在這邊放入我們要使用的 API
+        libraries:['places']
       }}
       options={{ mapTypeId: mapType }}
       onBoundsChange={handleCenterChange}
@@ -236,9 +236,9 @@ const SimplaMap = () => {
 <GoogleMapReact
   bootstrapURLKeys={{
     key: Key,
-    libraries:['places'] // 要在這邊放入我們要使用的 API
+    libraries:['places']
   }}
-  options={{ mapTypeId: 'hybrid' }} //
+  options={{ mapTypeId: 'hybrid' }}
   onBoundsChange={handleCenterChange}
   defaultCenter={props.center}
   defaultZoom={props.zoom}
@@ -304,6 +304,8 @@ const SimplaMap = () => {
 |satellite|即 Google Earth 的衛星圖像|
 |hybrid|普通視圖與衛星圖像的混合|
 |tettain|地形物理地圖|
+
+----
 
 ## 後記
 

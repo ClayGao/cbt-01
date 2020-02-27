@@ -15,12 +15,10 @@ const CafeMarker = ({ icon, text }) => (
 )
 
 // 搜尋按鈕
-
-const SearchType= ({text, type, handleSearchType}) => {
+const SearchType = ({text, type}) => {
   return <input type="button" value={text} name={type} />
 }
   
-
 
 // Map　
 const SimpleMap = (props) => {
@@ -31,7 +29,7 @@ const SimpleMap = (props) => {
     lng: 121.50
   })
 
-  const [searchingType, setSearchType] = useState('cafe')
+  const [searchType, setSearchType] = useState('cafe')
   const [mapType, setMapType] = useState('roadmap')
   const [mapApiLoaded, setMapApiLoaded] = useState(false)
   const [mapInstance, setMapInstance] = useState(null)
@@ -69,11 +67,11 @@ const SimpleMap = (props) => {
   const findLocation = () => {
     if(mapApiLoaded) {
       const service = new mapApi.places.PlacesService(mapInstance)
-
+      console.log('b')
       const request = {
         location: myPosition,
         radius: 1000, 
-        type: searchingType
+        type: searchType
       };
     
       service.nearbySearch(request, (results, status) => {
@@ -86,8 +84,8 @@ const SimpleMap = (props) => {
   
   useEffect(() => {
     findLocation()
-    console.log()
-  },[myPosition, searchingType])
+    console.log('a')
+  },[mapApiLoaded, myPosition, searchType])
   
 
   return (
@@ -103,7 +101,7 @@ const SimpleMap = (props) => {
       <GoogleMapReact
         bootstrapURLKeys={{ 
           key: Key,
-          libraries:['places'] // 要在這邊放入我們要使用的 API
+          libraries:['places'] 
         }}
         options={{ mapTypeId: mapType }}
         onBoundsChange={handleCenterChange}
@@ -111,6 +109,7 @@ const SimpleMap = (props) => {
         defaultZoom={props.zoom}
         yesIWantToUseGoogleMapApiInternals
         onGoogleApiLoaded={({ map, maps }) => apiHasLoaded(map, maps)}
+        distanceToMouse={50}
       >
         <MyPositionMarker
           lat={myPosition.lat}
