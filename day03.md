@@ -68,7 +68,7 @@ const findCafeLocation = () => {
 
 當然還有其他的 key，比如說 `name`，那麼就會搜尋符合該名字的地標
 
-關於其他 key 的部分，描述 nearbySearch 中 Request 的[文件](https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceSearchRequest)這邊都有詳細的介紹，雖然我英文不好，但還是看得懂大部分，所以各位讀者可以參考看看
+關於其他 key 的部分，描述 `nearbySearch` 中 Request 的[文件](https://developers.google.com/maps/documentation/javascript/reference/places-service#PlaceSearchRequest)這邊都有詳細的介紹，雖然我英文不好，但還是看得懂大部分，所以各位讀者可以參考看看
 
 另外就是 Callback 中的參數，`results` 是用來放搜尋後的結果，而 status 則是搜尋狀況，如果成功搜尋，值會是 "OK"
 
