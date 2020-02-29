@@ -1,23 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Key } from './key'
-import './App.css';
+import './App.scss';
 import GoogleMapReact from 'google-map-react';
 import { debounce } from 'lodash'
+import placeholder from './placeholder.svg'
 
-const MyPositionMarker = ({ text }) => <div>{text}</div>;
+const buttonStyle = {
+  cursor: 'pointer',
+  backgroundColor: 'white', 
+  border:'2px solid skyblue', 
+  borderRadius: '5px',
+  padding: '5px'
+}
+
+const MyPositionMarker = ({ text }) => (
+  <div style={{ width: '150px', display:'flex', alignItems:'center'}}>
+    <img style={{ height: '30px', width: '30px' }} src={placeholder} />
+    <span style={{ backgroundColor: 'white', border:'2px solid red', borderRadius: '5px', padding:'5px'}}>{text}</span>
+  </div>
+)
 
 // Cafe Marker
 
 const CafeMarker = ({ icon, text }) => (
-  <div>
+  <div style={{ width: '150px', display:'flex', alignItems:'center'}}>
     <img style={{ height: '30px', width: '30px' }} src={icon} />
-    <div>{text}</div>
+    <span style={{ backgroundColor: 'white', border:'2px solid orange', borderRadius: '5px', padding:'5px'}}>{text}</span>
   </div>
 )
 
 // 搜尋按鈕
 const SearchType = ({text, type}) => {
-  return <input type="button" value={text} name={type} />
+  return <input style={buttonStyle} type="button" value={text} name={type} />
 }
   
 
@@ -25,6 +39,7 @@ const SearchType = ({text, type}) => {
 const SimpleMap = (props) => {
 
   // 預設位置
+  const [currentCenter, setCurrentCenter] = useState(null)
   const [myPosition, setMyPosition] = useState({
     lat: 25.04, 
     lng: 121.50
@@ -36,6 +51,7 @@ const SimpleMap = (props) => {
   const [mapApi, setMapApi] = useState(null)
   const [places, setPlaces] = useState([])
   const [inputText, setInputText] = useState('')
+  const [autocompleteResults, setAutocompleteResults] = useState([])
 
   // 建立參考點
   let inputRef = useRef(null);
@@ -90,15 +106,46 @@ const SimpleMap = (props) => {
     if(mapApiLoaded) {
       const service = new mapApi.places.AutocompleteService()
       const request = {
-        input: inputText
+        input: inputText ? inputText : '台北市大同區'
       }
  
       service.getPlacePredictions(request, (results, status)=> {
         if(status === mapApi.places.PlacesServiceStatus.OK) {
-          console.log(results)
+          setAutocompleteResults(results)
         }
       });
     }
+  }
+
+  // 點擊自動完成地址
+  const handleClickToChangeMyPosition = e => {
+    const placeId = e.target.getAttribute('dataid')
+
+    const service = new mapApi.places.PlacesService(mapInstance)
+    const request = {
+      placeId,
+      ffields: ['name', 
+      'rating', 
+      'formatted_address', 
+      'formatted_phone_number', 
+      'geometry',
+      'opening_hours',
+      ]
+    }
+    service.getDetails(request, (results, status)=>{
+      if( status === mapApi.places.PlacesServiceStatus.OK) {
+        console.log(results)
+        console.log(results.opening_hours.isOpen())
+        const newPosition = {
+          lat: results.geometry.location.lat(),
+          lng: results.geometry.location.lng()
+        }
+        setCurrentCenter(newPosition)
+        setMyPosition(newPosition)
+        setAutocompleteResults([])
+        inputRef.current.value = ''
+      }
+    })
   }
 
   // 參考 inputRef 以更新 inputText
@@ -117,25 +164,55 @@ const SimpleMap = (props) => {
     findLocation()
   },[mapApiLoaded, myPosition, searchType])
 
-  //console.log(inputText)
-
+  const buttonStyle = {
+    cursor: 'pointer',
+    backgroundColor: 'white', 
+    border:'2px solid green', 
+    borderRadius: '5px',
+    padding: '8px'
+  }
+  
   return (
     <div style={{ height: '100vh', width: '100%' }}>
-      <div onClick={handleSearchType}>
-        <SearchType text="找餐廳"　type="restaurant" />
-        <SearchType text="找牙醫"　type="dentist" />
-        <SearchType text="找健身房"　type="gym" />
+      <div  style={{ position: 'fixed', zIndex: 3, bottom: '20px'}} >
+        <div onClick={handleSearchType}>
+          <SearchType text="找餐廳"　type="restaurant" />
+          <SearchType text="找牙醫"　type="dentist" />
+          <SearchType text="找健身房"　type="gym" />
+        </div>
+        <div onClick={handleMapTypeId} >
+          <input style={buttonStyle} type="button" value="衛星" name="hybrid" />
+          <input style={buttonStyle} type="button" value="路線" name="roadmap" />
+        </div>
       </div>
-      <input type="button" value="衛星" onClick={handleMapTypeId} name="hybrid" />
-      <input type="button" value="路線" onClick={handleMapTypeId} name="roadmap" />
-      <div>
-      自動完成: <input ref={inputRef} type="text" onChange={ debounce(handleInput,500) } />
+      <div style={{ 
+        position: 'fixed',
+        zIndex: 1, 
+        width: '300px',
+        backgroundColor: 'wheat',
+        top: '10px',
+        left: '10px',
+        padding: '10px',
+        border: '2px solid black',
+        borderRadius: '5px'
+      }}>
+        <div >
+        自動完成: <input ref={inputRef} type="text" onChange={ debounce(handleInput, 500) } />
+        </div>
+        <div onClick={handleClickToChangeMyPosition}>
+         {(autocompleteResults && inputText) ? autocompleteResults.map(item=>(
+          <div style={{ cursor: 'pointer', margin: '8px 0px'}} key={item.id} dataid={item.place_id}>
+            {item.description}
+          </div>
+         )) : null}
+        </div>
       </div>
       <GoogleMapReact
         bootstrapURLKeys={{ 
           key: Key,
           libraries:['places'] 
         }}
+        center={currentCenter}
         options={{ mapTypeId: mapType }}
         onBoundsChange={handleCenterChange}
         defaultCenter={props.center}
@@ -146,7 +223,7 @@ const SimpleMap = (props) => {
         <MyPositionMarker
           lat={myPosition.lat}
           lng={myPosition.lng}
-          text="My Position"
+          text="MyPosition"
         />
         {places.map(item=>(
           <CafeMarker
@@ -170,7 +247,6 @@ SimpleMap.defaultProps = {
   },
   zoom: 17
 };
-
 
 // App
 function App() {
